@@ -389,61 +389,45 @@ handleTouch(tabsEl, function(e) {
   switchTab(tab.dataset.tab);
 });
 
-// --- KEYBOARD & SCROLL WHEEL (R1 DPAD / keyboard passthrough) ---
+// --- R1 CUSTOM EVENTS (scroll wheel, PTT button) + desktop keyboard fallback ---
 
-function cycleTab(direction) {
-  const tabs = ['habit', 'daily', 'todo', 'reward'];
-  const idx = tabs.indexOf(activeTab);
-  const next = tabs[(idx + direction + tabs.length) % tabs.length];
-  switchTab(next);
+var R1_TABS = ['habit', 'daily', 'todo', 'reward'];
+
+function cycleTab(dir) {
+  var idx = R1_TABS.indexOf(activeTab);
+  switchTab(R1_TABS[(idx + dir + R1_TABS.length) % R1_TABS.length]);
+}
+
+function r1Scroll(delta) {
+  contentEl.scrollTop = Math.max(0, Math.min(contentEl.scrollTop + delta, contentEl.scrollHeight - contentEl.clientHeight));
 }
 
 function scoreFirstTask() {
-  const first = contentEl.querySelector('.task:not(.done)') || contentEl.querySelector('.task');
-  if (!first) return;
-  const id = first.dataset.id;
-  const type = first.dataset.type;
-  if (type === 'habit') scoreTask(id, 'up');
-  else if (type === 'daily' || type === 'todo') scoreTask(id, 'up');
-  else if (type === 'reward') scoreTask(id, 'up');
+  var t = contentEl.querySelector('.task:not(.done)') || contentEl.querySelector('.task');
+  if (!t) return;
+  var id = t.dataset.id, type = t.dataset.type;
+  if (type === 'habit' || type === 'daily' || type === 'todo' || type === 'reward') scoreTask(id, 'up');
 }
 
+// R1 scroll wheel → scroll
+window.addEventListener('scrollUp', function() { r1Scroll(-44); });
+window.addEventListener('scrollDown', function() { r1Scroll(44); });
+
+// R1 PTT single click → cycle tabs
+window.addEventListener('sideClick', function() { cycleTab(1); });
+
+// R1 PTT long press → mark first task done
+window.addEventListener('longPressStart', function() { scoreFirstTask(); });
+
+// Desktop keyboard fallback for testing
 document.addEventListener('keydown', function(e) {
-  // Only handle when app is visible
   if (appEl.style.display !== 'flex') return;
-
-  // Arrow Left/Right → cycle tabs
-  if (e.key === 'ArrowRight') {
-    cycleTab(1);
-    e.preventDefault();
-  } else if (e.key === 'ArrowLeft') {
-    cycleTab(-1);
-    e.preventDefault();
-  }
-
-  // Arrow Up/Down → scroll
-  if (e.key === 'ArrowDown') {
-    contentEl.scrollBy({ top: 44, behavior: 'smooth' });
-    e.preventDefault();
-  } else if (e.key === 'ArrowUp') {
-    contentEl.scrollBy({ top: -44, behavior: 'smooth' });
-    e.preventDefault();
-  }
-
-  // Enter → score first incomplete task up (mark done)
-  if (e.key === 'Enter' && !e.ctrlKey && !e.metaKey) {
-    scoreFirstTask();
-    e.preventDefault();
-  }
+  if (e.key === 'ArrowRight') { cycleTab(1); e.preventDefault(); }
+  else if (e.key === 'ArrowLeft') { cycleTab(-1); e.preventDefault(); }
+  else if (e.key === 'ArrowDown') { r1Scroll(44); e.preventDefault(); }
+  else if (e.key === 'ArrowUp') { r1Scroll(-44); e.preventDefault(); }
+  else if (e.key === 'Enter' && !e.ctrlKey && !e.metaKey) { scoreFirstTask(); e.preventDefault(); }
 });
-
-// Wheel event fallback (catches R1 scroll wheel if sent as wheel/touch)
-contentEl.addEventListener('wheel', function(e) {
-  e.preventDefault();
-  contentEl.scrollBy({ top: e.deltaY, behavior: 'auto' });
-}, { passive: false });
-
-contentEl.setAttribute('tabindex', '-1');
 
 // Login
 handleTouch(loginBtn, async function() {

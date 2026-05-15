@@ -79,8 +79,8 @@ html,body{width:240px;height:282px;overflow:hidden;background:#1E2329;color:#fff
   <div id="auth">
     <h1>Habitica</h1>
     <p>for Rabbit R1<br>Track habits from your pocket</p>
-    <input id="userId" placeholder="User ID" autocomplete="off">
-    <input id="apiToken" type="password" placeholder="API Token" autocomplete="off">
+              <input id="userId" placeholder="User ID" value="e9c2554d-b38b-4cd7-b398-d7308ef21fb5" autocomplete="off">
+    <input id="apiToken" type="password" placeholder="API Token" value="91aa553c-d733-4d85-8d87-c54a70476ef8" autocomplete="off">
     <div class="error" id="authError">Connection failed — check your credentials</div>
     <button id="loginBtn">Connect</button>
     <div class="hint">Get User ID &amp; API Token<br>from habitica.com → Settings → API</div>
@@ -411,8 +411,8 @@ async function init() {
   } else {
     authEl.style.display = 'flex';
     appEl.style.display = 'none';
-    if (userIdInput) userIdInput.value = userId;
-    if (apiTokenInput) apiTokenInput.value = apiToken;
+    if (userIdInput) userIdInput.value = userId || 'e9c2554d-b38b-4cd7-b398-d7308ef21fb5';
+    if (apiTokenInput) apiTokenInput.value = apiToken || '91aa553c-d733-4d85-8d87-c54a70476ef8';
   }
 }
 

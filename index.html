@@ -224,17 +224,17 @@ function renderStats(u) {
 
 function renderTasks(type) {
   const filtered = tasks.filter(t => t.type === type);
-  if (type === 'rewards') {
+  if (type === 'reward') {
     // For rewards, show all (they're not "incomplete" per se)
   }
   if (filtered.length === 0) { showEmpty(); return; }
 
   let html = '';
   for (const t of filtered) {
-    if (type === 'habits') html += renderHabit(t);
-    else if (type === 'dailies') html += renderDaily(t);
-    else if (type === 'todos') html += renderTodo(t);
-    else if (type === 'rewards') html += renderReward(t);
+    if (type === 'habit') html += renderHabit(t);
+    else if (type === 'daily') html += renderDaily(t);
+    else if (type === 'todo') html += renderTodo(t);
+    else if (type === 'reward') html += renderReward(t);
   }
   contentEl.innerHTML = html;
   contentEl.style.display = 'block';

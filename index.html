@@ -8,11 +8,9 @@
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html,body{width:240px;height:282px;overflow:hidden;background:#1E2329;color:#fff;font-family:-apple-system,system-ui,sans-serif;font-size:13px;user-select:none;-webkit-user-select:none}
 body{position:relative}
-#app{position:absolute;top:0;left:0;right:0;bottom:0;display:flex;flex-direction:column}
-#appScreen{display:none;flex:1;flex-direction:column}
 
 /* Auth */
-#auth{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;padding:20px;gap:8px}
+#auth{position:absolute;top:0;left:0;right:0;bottom:0;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px;gap:8px}
 #auth h1{font-size:20px;color:#24CC8F;margin-bottom:4px}
 #auth p{font-size:11px;color:#8899aa;text-align:center;margin-bottom:8px;line-height:1.4}
 #auth input{width:100%;padding:8px 10px;border:1px solid #3a424e;border-radius:6px;background:#2a303a;color:#fff;font-size:12px;outline:none}
@@ -21,7 +19,6 @@ body{position:relative}
 #auth .error{color:#DF5A5A;font-size:11px;display:none}
 #auth .hint{font-size:10px;color:#667788;text-align:center}
 
-/* Stats bar */
 #stats{display:flex;flex-direction:column;padding:3px 8px 2px;gap:2px;border-bottom:1px solid #2a303a;flex-shrink:0}
 .stat-row{display:flex;align-items:center;gap:4px;font-size:10px;height:12px}
 .stat-bar{flex:1;height:8px;border-radius:4px;background:#2a303a;overflow:hidden;position:relative}
@@ -35,6 +32,9 @@ body{position:relative}
 .stat-meta .level{color:#a78bfa}
 .stat-meta .mp{color:#2995C0}
 .charge{color:#DF5A5A;font-size:9px;margin-left:auto}
+
+/* App screen (overlay) */
+#appScreen{position:absolute;top:0;left:0;right:0;bottom:0;display:none;flex-direction:column}
 
 /* Tab bar */
 #tabs{display:flex;flex-shrink:0;border-bottom:1px solid #2a303a;background:#1a1f26}
@@ -76,12 +76,11 @@ body{position:relative}
 </style>
 </head>
 <body>
-<div id="app">
   <!-- Auth screen -->
   <div id="auth">
     <h1>Habitica</h1>
     <p>for Rabbit R1<br>Track habits from your pocket</p>
-              <input id="userId" placeholder="User ID" value="e9c2554d-b38b-4cd7-b398-d7308ef21fb5" autocomplete="off">
+    <input id="userId" placeholder="User ID" value="e9c2554d-b38b-4cd7-b398-d7308ef21fb5" autocomplete="off">
     <input id="apiToken" type="password" placeholder="API Token" value="91aa553c-d733-4d85-8d87-c54a70476ef8" autocomplete="off">
     <div class="error" id="authError">Connection failed — check your credentials</div>
     <button id="loginBtn">Connect</button>
@@ -89,7 +88,7 @@ body{position:relative}
   </div>
 
   <!-- App screen -->
-  <div id="appScreen" style="display:none">
+  <div id="appScreen">
     <div id="stats"></div>
     <div id="tabs">
       <div class="tab active" data-tab="habits">Habits</div>
@@ -102,7 +101,7 @@ body{position:relative}
     <div id="empty">No tasks here yet!</div>
     <div id="error-msg"></div>
   </div>
-</div>
+</body>
 
 <script>
 (function(){

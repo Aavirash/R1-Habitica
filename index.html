@@ -241,6 +241,7 @@ function renderTasks(type) {
   loadingEl.style.display = 'none';
   emptyEl.style.display = 'none';
   errorEl.style.display = 'none';
+  focusContent();
 }
 
 function renderHabit(t) {
@@ -322,6 +323,10 @@ function renderStatsBar() {
   if (userData) statsEl.innerHTML = renderStats(userData);
 }
 
+function focusContent() {
+  if (appEl.style.display === 'flex') contentEl.focus();
+}
+
 // --- SCORE TASK ---
 
 async function scoreTask(id, direction) {
@@ -343,6 +348,16 @@ function handleTouch(el, handler) {
   el.addEventListener('click', function(e) {
     handler(e);
   });
+}
+
+// Tab switching helper
+function switchTab(name) {
+  const tab = document.querySelector('[data-tab="' + name + '"]');
+  if (!tab) return;
+  document.querySelectorAll('.tab').forEach(function(t) { t.classList.remove('active'); });
+  tab.classList.add('active');
+  activeTab = name;
+  renderTasks(activeTab);
 }
 
 // Task scoring
@@ -371,11 +386,64 @@ handleTouch(document.body, function(e) {
 handleTouch(tabsEl, function(e) {
   const tab = e.target.closest('.tab');
   if (!tab) return;
-  document.querySelectorAll('.tab').forEach(function(t) { t.classList.remove('active'); });
-  tab.classList.add('active');
-  activeTab = tab.dataset.tab;
-  renderTasks(activeTab);
+  switchTab(tab.dataset.tab);
 });
+
+// --- KEYBOARD & SCROLL WHEEL (R1 DPAD / keyboard passthrough) ---
+
+function cycleTab(direction) {
+  const tabs = ['habit', 'daily', 'todo', 'reward'];
+  const idx = tabs.indexOf(activeTab);
+  const next = tabs[(idx + direction + tabs.length) % tabs.length];
+  switchTab(next);
+}
+
+function scoreFirstTask() {
+  const first = contentEl.querySelector('.task:not(.done)') || contentEl.querySelector('.task');
+  if (!first) return;
+  const id = first.dataset.id;
+  const type = first.dataset.type;
+  if (type === 'habit') scoreTask(id, 'up');
+  else if (type === 'daily' || type === 'todo') scoreTask(id, 'up');
+  else if (type === 'reward') scoreTask(id, 'up');
+}
+
+document.addEventListener('keydown', function(e) {
+  // Only handle when app is visible
+  if (appEl.style.display !== 'flex') return;
+
+  // Arrow Left/Right → cycle tabs
+  if (e.key === 'ArrowRight') {
+    cycleTab(1);
+    e.preventDefault();
+  } else if (e.key === 'ArrowLeft') {
+    cycleTab(-1);
+    e.preventDefault();
+  }
+
+  // Arrow Up/Down → scroll
+  if (e.key === 'ArrowDown') {
+    contentEl.scrollBy({ top: 44, behavior: 'smooth' });
+    e.preventDefault();
+  } else if (e.key === 'ArrowUp') {
+    contentEl.scrollBy({ top: -44, behavior: 'smooth' });
+    e.preventDefault();
+  }
+
+  // Enter → score first incomplete task up (mark done)
+  if (e.key === 'Enter' && !e.ctrlKey && !e.metaKey) {
+    scoreFirstTask();
+    e.preventDefault();
+  }
+});
+
+// Wheel event fallback (catches R1 scroll wheel if sent as wheel/touch)
+contentEl.addEventListener('wheel', function(e) {
+  e.preventDefault();
+  contentEl.scrollBy({ top: e.deltaY, behavior: 'auto' });
+}, { passive: false });
+
+contentEl.setAttribute('tabindex', '-1');
 
 // Login
 handleTouch(loginBtn, async function() {

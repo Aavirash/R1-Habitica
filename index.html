@@ -91,10 +91,10 @@ body{position:relative}
   <div id="appScreen">
     <div id="stats"></div>
     <div id="tabs">
-      <div class="tab active" data-tab="habits">Habits</div>
-      <div class="tab" data-tab="dailies">Daily</div>
-      <div class="tab" data-tab="todos">Todos</div>
-      <div class="tab" data-tab="rewards">Rewards</div>
+      <div class="tab active" data-tab="habit">Habits</div>
+      <div class="tab" data-tab="daily">Daily</div>
+      <div class="tab" data-tab="todo">Todos</div>
+      <div class="tab" data-tab="reward">Rewards</div>
     </div>
     <div id="content"></div>
     <div id="loading"><div class="spinner"></div></div>
@@ -110,7 +110,7 @@ body{position:relative}
 const API = 'https://habitica.com/api/v3';
 let userId = localStorage.getItem('habitica_userId') || '';
 let apiToken = localStorage.getItem('habitica_apiToken') || '';
-let activeTab = 'habits';
+let activeTab = 'habit';
 let tasks = [];
 let userData = null;
 

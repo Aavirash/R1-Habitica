@@ -156,6 +156,7 @@ function apiHeaders() {
   return {
     'x-api-user': userId,
     'x-api-key': apiToken,
+    'x-client': userId + '-R1-Habitica',
     'Content-Type': 'application/json',
   };
 }
@@ -381,7 +382,7 @@ loginBtn.addEventListener('click', async function() {
     await loadData();
   } catch (e) {
     authError.style.display = 'block';
-    authError.textContent = 'Connection failed — check your credentials';
+    authError.textContent = 'Error: ' + (e.message || e);
   }
   loginBtn.textContent = 'Connect';
   loginBtn.disabled = false;
